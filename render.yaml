@@ -1,0 +1,47 @@
+# Render Blueprint for the AAVETech WhatsApp assistant.
+#   Dashboard: New + > Blueprint > connect this repo > Render reads this file.
+#   Docs: https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: aavetech-whatsapp-bot
+    runtime: docker
+    plan: starter              # free tier sleeps + loses disk; see docs/DEPLOY_RENDER.md
+    region: singapore          # closest to Kerala; use oregon/frankfurt if you prefer
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /healthz
+    autoDeploy: true
+    disk:
+      name: bot-data
+      mountPath: /app/data     # SQLite lives here; survives deploys/restarts
+      sizeGB: 1
+    envVars:
+      - key: BUSINESS_CONFIG
+        value: config/clients/aavetech.json
+      - key: BOT_DB
+        value: /app/data/bot.db
+      - key: PUBLIC_BASE_URL
+        sync: false            # set to https://aavetech-whatsapp-bot.onrender.com (or your domain)
+      - key: ADMIN_TOKEN
+        generateValue: true    # Render generates it; copy from the dashboard to log in
+      - key: PAYMENT_PROVIDER
+        value: mock            # flip to razorpay when the keys are in
+      - key: WA_TOKEN
+        sync: false
+      - key: WA_PHONE_ID
+        sync: false
+      - key: WA_VERIFY_TOKEN
+        sync: false
+      - key: WA_APP_SECRET
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_WEBHOOK_SECRET
+        sync: false
+      - key: FOLLOWUP_CART_SECONDS
+        value: "900"
+      - key: FOLLOWUP_PAYMENT_SECONDS
+        value: "300"
+      - key: FOLLOWUP_RATING_SECONDS
+        value: "90"
